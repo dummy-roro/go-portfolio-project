@@ -72,7 +72,6 @@ jobs:
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-portfolio:${{github.run_id}
 
   Updating-helm-tags:
-      needs: Image-Scanning
       
       runs-on: ubuntu-latest
       steps:
