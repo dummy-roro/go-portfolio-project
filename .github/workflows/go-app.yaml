@@ -10,7 +10,6 @@ on:
 
 env: 
   REGISTRY: docker.io
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
 
@@ -69,7 +68,7 @@ jobs:
       with:
         path: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/go-port:${{github.run_id}}
+        tags: ${{ secrets.DOCKER_USERNAME }}/go-portfolio:${{github.run_id}}
 
   Image-Scanning:
       runs-on: ubuntu-latest
@@ -105,39 +104,23 @@ jobs:
       - name: Cloning the helm repo
         uses: GuillaumeFalourd/clone-github-repo-action@v2.3
         with:
-          owner: 'AmanPathak-DevOps'
-          repository: 'go-app-devops'
+          owner: 'dummy-roro'
+          repository: 'go-portfolio-project-manifests'
           access-token: ${{ secrets.REPO_PAT }}
           branch: 'master'
 
 
       - name: Updating values in helm
         run: |
-          cd go-app-devops
+          cd go-portfolio-project-manifests
           ls
           sed -i 's/tag: .*/tag: "${{github.run_id}}"/' values.yaml
 
       - name: Pushing changes
         run: |
           cd go-app-devops
-          git config --global user.email "aman07pathak@gmail.com"
-          git config --global user.name "AmanPathak-DevOps"
+          git config --global user.email "dummyroro@gmail.com"
+          git config --global user.name "dummy-roro"
           git add values.yaml
           git commit -am "Updated values.yaml file"
           git push
-
-      
-  Slack-Notification:
-
-      runs-on: ubuntu-latest
-      needs: [build, Code-Quality, Docker-Image-Push, Image-Scanning, Updating-helm-tags]
-      steps:
-      
-      - name: Slack Notification
-        uses: act10ns/slack@v1
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#go-app-github-actions'
-        if: always()
-
