@@ -93,6 +93,6 @@ jobs:
         cd go-portfolio-project-manifests
         git config --global user.email "dummyroro@gmail.com"
         git config --global user.name "dummy-roro"
-        git add values.yaml
+        git add charts/values.yaml
         git commit -am "Updated values.yaml file"
         git push
