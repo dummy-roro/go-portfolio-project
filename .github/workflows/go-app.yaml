@@ -31,7 +31,6 @@ jobs:
     - name: Test
       run: go test ./
 
-
   Code-Quality:
     runs-on: ubuntu-latest
     needs: build
@@ -44,11 +43,10 @@ jobs:
       uses: golangci/golangci-lint-action@v6
       with:
         version: v1.56.2
-      continue-on-error: true
-        
+      continue-on-error: true  # Let the pipeline continue even if lint fails
+
   Docker-Image-Push: 
     runs-on: ubuntu-latest
-
     needs: Code-Quality
 
     steps:
@@ -67,35 +65,34 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v6.5.0
       with:
-        path: ./Dockerfile
+        context: .
+        file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-portfolio:${{github.run_id}
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-portfolio:${{ github.run_id }}
 
   Updating-helm-tags:
-      
-      runs-on: ubuntu-latest
-      steps:
-      
-      - name: Cloning the helm repo
-        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
-        with:
-          owner: 'dummy-roro'
-          repository: 'go-portfolio-project-manifests'
-          access-token: ${{ secrets.REPO_PAT }}
-          branch: 'master'
+    runs-on: ubuntu-latest
+    needs: Docker-Image-Push
+    
+    steps:
+    - name: Cloning the helm repo
+      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+      with:
+        owner: 'dummy-roro'
+        repository: 'go-portfolio-project-manifests'
+        access-token: ${{ secrets.REPO_PAT }}
+        branch: 'master'
 
+    - name: Updating values in helm
+      run: |
+        cd go-portfolio-project-manifests
+        sed -i 's/tag: .*/tag: "${{ github.run_id }}"/' values.yaml
 
-      - name: Updating values in helm
-        run: |
-          cd go-portfolio-project-manifests
-          ls
-          sed -i 's/tag: .*/tag: "${{github.run_id}}"/' values.yaml
-
-      - name: Pushing changes
-        run: |
-          cd go-app-devops
-          git config --global user.email "dummyroro@gmail.com"
-          git config --global user.name "dummy-roro"
-          git add values.yaml
-          git commit -am "Updated values.yaml file"
-          git push
+    - name: Pushing changes
+      run: |
+        cd go-portfolio-project-manifests
+        git config --global user.email "dummyroro@gmail.com"
+        git config --global user.name "dummy-roro"
+        git add values.yaml
+        git commit -am "Updated values.yaml file"
+        git push
