@@ -53,7 +53,7 @@ jobs:
     - name: Run golang-lint
       uses: golangci/golangci-lint-action@v8
       with:
-        version: v1.55.2
+        version: v2.1.1
       continue-on-error: true  # Let the pipeline continue even if lint fails
 
   Docker-Image-Push: 
