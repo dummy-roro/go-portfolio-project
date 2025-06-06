@@ -61,9 +61,9 @@ docker build -t your-dockerhub-username/go-portfolio:latest .
 ### ☸️ Deploy to Kubernetes
 
 ```bash
-helm install go-portfolio ./charts/go-portfolio   --set image.tag=<your-image-tag>
-```
-
+helm install my-portfolio ./go-portfolio \
+  --set image.tag=abc1234 \
+  --set replicaCount=2```
 ---
 
 ## ⚙️ CI/CD
@@ -78,7 +78,7 @@ This project uses GitHub Actions for:
 Secrets required in GitHub:
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_PASSWORD`
-- `REPO_PAT` (for accessing the Helm repo)
+- `REPO_PAT` (Personal Access Token for accessing the Helm repo)
 
 ---
 
@@ -89,7 +89,6 @@ Secrets required in GitHub:
 ├── .github/workflows/ci-cd.yml   # CI/CD pipeline
 ├── Dockerfile                    # Docker image definition
 ├── main.go                       # Go source code
-├── charts/                       # Helm chart directory
 └── README.md                     # You are here
 ```
 
