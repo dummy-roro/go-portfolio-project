@@ -63,7 +63,8 @@ docker build -t your-dockerhub-username/go-portfolio:latest .
 ```bash
 helm install my-portfolio ./go-portfolio \
   --set image.tag=abc1234 \
-  --set replicaCount=2```
+  --set replicaCount=2
+```
 ---
 
 ## ⚙️ CI/CD
